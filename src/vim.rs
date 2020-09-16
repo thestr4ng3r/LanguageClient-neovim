@@ -127,7 +127,15 @@ impl Vim {
         let key = "position";
         let expr = "LSP#position()";
 
-        try_get(key, params)?.map_or_else(|| self.eval(expr), Ok)
+        try_get(key, params)?.map_or_else(|| {
+            let cc : Result<Option<u64>> = try_get("character", params);
+            let ll : Result<Option<u64>> = try_get("line", params);
+            if let (Ok(Some(c)), Ok(Some(l))) = (cc, ll) {
+                Ok(Position::new(l as u64, c as u64))
+            } else {
+                self.eval(expr)
+            }
+        }, Ok)
     }
 
     pub fn get_current_word(&self, params: &Value) -> Result<String> {
