@@ -371,6 +371,7 @@ endfunction
 function! s:OpenHoverPreview(bufname, lines, filetype) abort
     " Use local variable since parameter is not modifiable
     let lines = a:lines
+	call filter(lines, 'v:val != ""')
     let bufnr = bufnr('%')
 
     let display_approach = ''
@@ -397,10 +398,6 @@ function! s:OpenHoverPreview(bufname, lines, filetype) abort
         let width = 0
         for index in range(len(lines))
             let line = lines[index]
-            if line !=# ''
-                " Give a left margin
-                let line = ' ' . line
-            endif
             let lw = strdisplaywidth(line)
             if lw > width
                 let width = lw
@@ -408,9 +405,7 @@ function! s:OpenHoverPreview(bufname, lines, filetype) abort
             let lines[index] = line
         endfor
 
-        " Give margin
-        let width += 1
-        let lines = [''] + lines + ['']
+        let lines = lines
         let height = len(lines)
 
         " Calculate anchor
